@@ -139,7 +139,11 @@ public class InAppWebView: WKWebView, WKUIDelegate,
             if #available(macOS 12.0, *), settings.transparentBackground {
                 underPageBackgroundColor = .clear
             }
-        
+
+            if #available(macOS 10.14, *), settings.transparentBackground {
+                appearance = NSAppearance(named: .aqua)
+            }
+
             allowsBackForwardNavigationGestures = settings.allowsBackForwardNavigationGestures
             allowsLinkPreview = settings.allowsLinkPreview
             if !settings.userAgent.isEmpty {
@@ -773,6 +777,15 @@ public class InAppWebView: WKWebView, WKUIDelegate,
                 self.underPageBackgroundColor = NSColor(hexString: underPageBackgroundColor)
             }
         }
+
+        if #available(macOS 10.14, *) {
+            if(settings?.transparentBackground == true) {
+                appearance = NSAppearance(named: .aqua)
+            } else {
+                appearance = nil
+            }
+        }
+        
         if #available(macOS 12.3, *) {
             if newSettingsMap["isSiteSpecificQuirksModeEnabled"] != nil, settings?.isSiteSpecificQuirksModeEnabled != newSettings.isSiteSpecificQuirksModeEnabled {
                 configuration.preferences.isSiteSpecificQuirksModeEnabled = newSettings.isSiteSpecificQuirksModeEnabled

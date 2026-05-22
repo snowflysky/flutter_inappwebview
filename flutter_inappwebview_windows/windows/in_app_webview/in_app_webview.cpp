@@ -278,6 +278,15 @@ namespace flutter_inappwebview_plugin
       }
     }
 
+    if (auto webView2_13 = webView.try_query<ICoreWebView2_13>()) {
+      wil::com_ptr<ICoreWebView2Profile> profile;
+      if (succeededOrLog(webView2_13->get_Profile(&profile))) {
+        profile->put_PreferredColorScheme(settings->transparentBackground
+          ? COREWEBVIEW2_PREFERRED_COLOR_SCHEME_LIGHT
+          : COREWEBVIEW2_PREFERRED_COLOR_SCHEME_AUTO);
+      }
+    }
+
     // required to make Runtime events work
     failedLog(webView->CallDevToolsProtocolMethod(L"Runtime.enable", L"{}", Callback<ICoreWebView2CallDevToolsProtocolMethodCompletedHandler>(
       [this](HRESULT errorCode, LPCWSTR returnObjectAsJson)
@@ -3052,6 +3061,18 @@ namespace flutter_inappwebview_plugin
       if (fl_map_contains_not_null(newSettingsMap, "transparentBackground") && settings->transparentBackground != newSettings->transparentBackground) {
         BYTE alpha = newSettings->transparentBackground ? 0 : 255;
         webViewController2->put_DefaultBackgroundColor({ alpha, 255, 255, 255 });
+      }
+    }
+
+
+    if (auto webView2_13 = webView.try_query<ICoreWebView2_13>()) {
+      if (fl_map_contains_not_null(newSettingsMap, "transparentBackground") && settings->transparentBackground != newSettings->transparentBackground) {
+        wil::com_ptr<ICoreWebView2Profile> profile;
+        if (succeededOrLog(webView2_13->get_Profile(&profile))) {
+          profile->put_PreferredColorScheme(newSettings->transparentBackground
+            ? COREWEBVIEW2_PREFERRED_COLOR_SCHEME_LIGHT
+            : COREWEBVIEW2_PREFERRED_COLOR_SCHEME_AUTO);
+        }
       }
     }
 
